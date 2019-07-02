@@ -45,8 +45,7 @@ query_eur = '''select distinct a.gtp_code, sum(a.fact) over (partition by a.gtp_
              (select distinct t.trader_code gtp_code, f.target_date, f.hour, f.volume fact
              from frsdb_dev.dev_forem_fact f, frsdb_dev.trader t
              where f.end_ver=999999999999999 and f.oi_id=t.real_trader_id 
-             and f.oi_type=4
-             and t.fed_station<>1 
+             and f.oi_type=4 and t.fed_station<>1 
              and f.target_date between t.begin_date and t.end_date
              and f.target_date between to_date(:d, 'dd.mm.yyyy') and last_day(to_date(:d, 'dd.mm.yyyy'))) a'''
 query_sib = '''select distinct a.gtp_code, sum(a.fact) over (partition by a.gtp_code) volume
@@ -54,8 +53,7 @@ query_sib = '''select distinct a.gtp_code, sum(a.fact) over (partition by a.gtp_
              (select distinct t.trader_code gtp_code, f.target_date, f.hour, f.volume fact
              from frsdb_dev_sib.dev_forem_fact f, frsdb_dev_sib.trader t
              where f.end_ver=999999999999999 and f.oi_id=t.real_trader_id 
-             and f.oi_type=4
-             and t.fed_station<>1 
+             and f.oi_type=4 and t.fed_station<>1 
              and t.trader_code not in ('PAMUREZN', 'PYAKU5ZN', 'PYAKUTZN')
              and f.target_date between t.begin_date and t.end_date
              and f.target_date between to_date(:d, 'dd.mm.yyyy') and last_day(to_date(:d, 'dd.mm.yyyy'))) a'''
@@ -68,15 +66,16 @@ fact_sib = pd.read_sql(query_sib, conn_sib, params={'d': date})
 if fact_sib.shape[0] == 0:
     print('Прервано! Отсутствуют данные по фактическим объемам в БД Сибири')
     raise SystemExit
-fact_check = fact_eur.append(fact_sib)
-fact_check.sort_values('GTP_CODE', inplace=True)
-fact_check.reset_index(drop=True, inplace=True)
+fact_test = fact_eur.append(fact_sib)
+fact_test.drop_duplicates(inplace=True)
+fact_test.sort_values('GTP_CODE', inplace=True)
+fact_test.reset_index(drop=True, inplace=True)
 # Сравниваем отчет с данными в базе
-check = fact_check.append(fact_svnc)
-check.drop_duplicates(keep=False, inplace=True)
-if check.shape[0] != 0:
+test = fact_test.append(fact_svnc)
+test.drop_duplicates(keep=False, inplace=True)
+if test.shape[0] != 0:
     print('Прервано! Объемы из базы данных не совпадают с объемами в отчете для СВНЦ: ')
-    print(check)
+    print(test)
     raise SystemExit
 else:
     print('Проверка отчета выполнена успешно! Объемы из базы данных совпадают с объемами в отчете для СВНЦ')
@@ -105,13 +104,13 @@ if version_sib is None:
     print('Прервано! Факт для ПРНЦ на Сибири не опубликован')
     raise SystemExit
 
+
+# Формирование письма
 send_body = 'Добрый день!\n\nНаправляем фактические объемы по ГТП потребления ' \
             'за ' + m[int(mon) - 1] + ' ' + ye + '.\n\n' + 'Публикация факта за ' + m[int(mon) - 1] + ' ' + ye + ' ' \
             'по Европе и Сибири выполнена.\n\n' + 'Версии: \n' + 'Европа  ' + str(version_eur) + '\n' \
             'Сибирь  ' + str(version_sib) + '\n\nС уважением, \nОтдел расчета объемов покупки и \nпродажи' \
             ' электрической энергии АО «АТС»'
-
-# Формирование письма
 msg = MIMEMultipart()
 msg['From'] = cfg.send_from
 msg['To'] = cfg.send_to_svnc
