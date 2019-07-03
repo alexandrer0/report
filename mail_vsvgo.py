@@ -31,7 +31,7 @@ path_0 = cfg.path
 path_vsvgo = path_0 + 'Отчеты по расчету ВСВГО/' + ye + '/' + mon + '/'
 path_eur = path_vsvgo + 'Отчет по ВСВГО за ' + m[int(mon) - 1] + ' ' + ye + ' Европа.xls'
 path_sib = path_vsvgo + 'Отчет по ВСВГО за ' + m[int(mon) - 1] + ' ' + ye + ' Сибирь.xls'
-path_vsvgo_check = path_vsvgo + 'Проверка резеров мощности за ' + m[int(mon) - 1] + '.xls'
+path_vsvgo_check = path_vsvgo + 'Проверка резервов мощности за ' + m[int(mon) - 1] + '.xls'
 # Проверяем наличие отчетов по ВСВГО
 if not os.path.isfile(path_eur):
     print('Прервано! Отчет по ВСВГО для Европы не найден')
