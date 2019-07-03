@@ -117,7 +117,7 @@ send_body = 'Добрый день!\n\nРасчет по ВСВГО за ' + m[i
             'С уважением, \nОтдел расчета объемов покупки и \nпродажи электрической энергии АО «АТС»'
 
 msg = MIMEMultipart()
-msg['From'] = cfg.send_from
+msg['From'] = cfg.send_from_vsvgo
 msg['To'] = cfg.send_to_vsvgo
 msg['CC'] = cfg.send_cc_vsvgo
 msg['Subject'] = 'Расчет ВСВГО за ' + m[int(mon) - 1] + ' ' + ye

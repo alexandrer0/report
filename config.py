@@ -8,7 +8,8 @@ user_db = 'zhuravlev'  # Имя пользователя базы данных
 pass_db = 'xxx'  # Пароль к базе данных
 # Путь к общей папке
 path = '//vm-dt-files/Департамент_торговли/Отдел_расчета_объемов_покупки_и_продажи_электрической_энергии/_Общая/'
-send_from = 'mfobr-dt@rosenergo.com'  # Адрес отправителя отчета
+send_from = 'mfobr-dt@rosenergo.com'  # Адрес отправителя отчетов
+send_from_vsvgo = 'slesarenko@rosenergo.com'  # Адрес отправителя отчетов по ВСВГО
 # Адреса получателей отчетов по индикаторам и для СВНЦ
 send_to_svnc = 'nag@rosenergo.com, gafurov@rosenergo.com, katkovskaya@rosenergo.com'
 # Адреса получателей отчетов по ВСВГО
