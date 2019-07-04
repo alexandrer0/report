@@ -1,5 +1,7 @@
 import pandas as pd
 from StyleFrame import StyleFrame, Styler, utils
+from openpyxl.styles import Border, Side, Alignment
+from openpyxl import load_workbook
 import config as cfg
 import cx_Oracle as ora
 import smtplib
@@ -31,7 +33,7 @@ path_0 = cfg.path
 path_vsvgo = path_0 + 'Отчеты по расчету ВСВГО/' + ye + '/' + mon + '/'
 path_eur = path_vsvgo + 'Отчет по ВСВГО за ' + m[int(mon) - 1] + ' ' + ye + ' Европа.xls'
 path_sib = path_vsvgo + 'Отчет по ВСВГО за ' + m[int(mon) - 1] + ' ' + ye + ' Сибирь.xls'
-path_vsvgo_check = path_vsvgo + 'Проверка резервов мощности за ' + m[int(mon) - 1] + '.xls'
+path_vsvgo_check = path_vsvgo + 'Проверка резервов мощности за ' + m[int(mon) - 1] + ' ' + ye + '.xlsx'
 # Проверяем наличие отчетов по ВСВГО
 if not os.path.isfile(path_eur):
     print('Прервано! Отчет по ВСВГО для Европы не найден')
@@ -94,22 +96,68 @@ query_vsvgo_check_sib = '''select target_date, gtp_id, amount
 vsvgo_check_eur = pd.read_sql(query_vsvgo_check_eur, conn_eur, params={':d': date})
 vsvgo_check_sib = pd.read_sql(query_vsvgo_check_sib, conn_sib, params={':d': date})
 vsvgo_check = vsvgo_check_eur.append(vsvgo_check_sib)
+vsvgo_check['TARGET_DATE'] = vsvgo_check['TARGET_DATE'].dt.date
 vsvgo_check.drop_duplicates(inplace=True)
 vsvgo_check.sort_values(['TARGET_DATE', 'GTP_ID'], inplace=True)
-vsvgo_check['TARGET_DATE'] = vsvgo_check['TARGET_DATE'].dt.date
-excel_writer = StyleFrame.ExcelWriter(path_vsvgo_check)
-vsvgo_check = StyleFrame(vsvgo_check)
-vsvgo_check.set_column_width_dict({'TARGET_DATE': 12, 'GTP_ID': 10, 'AMOUNT': 20})
-style_date = Styler(font_size=10,
-                    number_format=utils.number_formats.date_time,
-                    horizontal_alignment=utils.horizontal_alignments.right)
-style = Styler(font_size=10,
-               horizontal_alignment=utils.horizontal_alignments.right)
-vsvgo_check.apply_column_style(cols_to_style=['TARGET_DATE'], styler_obj=style_date, style_header=True)
-vsvgo_check.apply_column_style(cols_to_style=['GTP_ID', 'AMOUNT'], styler_obj=style, style_header=True)
-vsvgo_check.rename({'TARGET_DATE': 'Месяц', 'GTP_ID': 'id ГТП', 'AMOUNT': 'Стоимость, руб.'}, inplace=True)
-vsvgo_check.to_excel(excel_writer=excel_writer, sheet_name='Проверка резеров мощности', index=False)
-excel_writer.save()
+
+
+# vsvgo_check['TARGET_DATE'] = vsvgo_check['TARGET_DATE'].astype('str')
+# vsvgo_check['GTP_ID'] = vsvgo_check['GTP_ID'].astype('str')
+# vsvgo_check['AMOUNT'] = vsvgo_check['AMOUNT'].astype('str')
+
+# Пытался использовать StyleFrame
+
+# excel_writer = StyleFrame.ExcelWriter(path_vsvgo_check)
+# vsvgo_check = StyleFrame(vsvgo_check)
+# vsvgo_check.set_column_width_dict({'TARGET_DATE': 12, 'GTP_ID': 10, 'AMOUNT': 20})
+# style_date = Styler(font_size=10,
+#                     number_format=utils.number_formats.date_time,
+#                     horizontal_alignment=utils.horizontal_alignments.right)
+# style = Styler(font_size=10,
+#                horizontal_alignment=utils.horizontal_alignments.right)
+# vsvgo_check.apply_column_style(cols_to_style=['TARGET_DATE'], styler_obj=style_date, style_header=True)
+# vsvgo_check.apply_column_style(cols_to_style=['GTP_ID', 'AMOUNT'], styler_obj=style, style_header=True)
+# vsvgo_check.rename({'TARGET_DATE': 'Месяц', 'GTP_ID': 'id ГТП', 'AMOUNT': 'Стоимость, руб.'}, inplace=True)
+# vsvgo_check.to_excel(excel_writer=excel_writer, sheet_name='Проверка резервов мощности', index=False)
+# excel_writer.save()
+
+vsvgo_check.rename({'TARGET_DATE': 'Месяц', 'GTP_ID': 'id ГТП', 'AMOUNT': 'Стоимость, руб.'}, inplace=True, axis=1)
+vsvgo_check.to_excel(path_vsvgo_check, sheet_name='Проверка резервов мощности', index=False)
+
+# Создаем шаблоны стилей
+border = Border(left=Side(border_style='thin', color='FF000000'),
+                right=Side(border_style='thin', color='FF000000'),
+                top=Side(border_style='thin', color='FF000000'),
+                bottom=Side(border_style='thin', color='FF000000'))
+align_head = Alignment(horizontal='center', vertical='center',
+                       text_rotation=0, wrap_text=True,
+                       shrink_to_fit=True, indent=0)
+align_cell = Alignment(horizontal='right', vertical='center',
+                       text_rotation=0, wrap_text=False,
+                       shrink_to_fit=False, indent=0)
+
+wb = load_workbook(path_vsvgo_check)
+ws = wb.active
+# Устанавливаем ширину столбцов
+dim = {}
+for row in ws.iter_rows():
+    for cell in row:
+        if cell.value:
+            dim[cell.column] = max((dim.get(cell.column, 0), len(str(cell.value))))
+for col, value in dim.items():
+    ws.column_dimensions[col].width = 5 + 0.85 * value
+# Задаем стили ячеек
+for row in ws.iter_rows():
+    for cell in row:
+        if cell in ws['1:1']:
+            cell.border = border
+            cell.alignment = align_head
+        else:
+            cell.border = border
+            cell.alignment = align_cell
+
+wb.save(path_vsvgo_check)
+
 
 # Формирование письма
 send_body = 'Добрый день!\n\nРасчет по ВСВГО за ' + m[int(mon) - 1] + ' ' + ye + ' выполнен.\n\n' \
