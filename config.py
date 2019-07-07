@@ -1,5 +1,5 @@
 year = '2019'  # Год отчета
-mon = '05'  # Месяц отчета
+mon = '06'  # Месяц отчета
 db_sib = 'devsibsc'  # База данных sib
 db_eur = 'deveursc'  # База данных eur
 # db_sib = 'mforuby'            # База данных sib_test
@@ -21,7 +21,11 @@ send_cc_vsvgo = 'sap@rosenergo.com, dvk_info@rosenergo.com, a.zhuravlev@rosenerg
 send_to_cap = 'kolyada@rosenergo.com, lushin@rosenergo.com, lich@rosenergo.com'
 # Адреса получателей отчетов по ППП и РД на торговой
 send_to_ts = 'tyrdanov@rosenergo.com, sotskov_a@rosenergo.com'
-send_cc = 'a.zhuravlev@rosenergo.com, slesarenko@rosenergo.com, nasonov@rosenergo.com' # Копии
+# Адреса получателей отчетов по неготовности в ДФР
+send_to_net = 'ovk@rosenergo.com, volkova@rosenergo.com, lyuda@rosenergo.com, nekrylov@rosenergo.com, ' \
+              'kalachev@rosenergo.com, grev@rosenergo.com, a.kuznecov@rosenergo.com, alexch@rosenergo.com, ' \
+              'mihaylov@rosenergo.com, p.polonyankin@rosenergo.com'
+send_cc = 'a.zhuravlev@rosenergo.com, slesarenko@rosenergo.com, nasonov@rosenergo.com'  # Копии
 
 
 # Адреса получателей отчетов по индикаторам и для СВНЦ
@@ -34,4 +38,6 @@ send_cc = 'a.zhuravlev@rosenergo.com, slesarenko@rosenergo.com, nasonov@rosenerg
 # send_to_cap = 'a.zhuravlev@rosenergo.com'
 # Адреса получателей отчетов по ППП и РД на торговой
 # send_to_ts = 'a.zhuravlev@rosenergo.com'
+# Адреса получателей отчетов по неготовности в ДФР
+# send_to_net = 'a.zhuravlev@rosenergo.com'
 # send_cc = 'a.zhuravlev@rosenergo.com'  # Копии
