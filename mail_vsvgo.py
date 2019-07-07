@@ -56,14 +56,14 @@ vsvgo.sort_values(['TARGET_DATE', 'HOUR', 'GTP_CODE', 'GA_CODE'], inplace=True)
 vsvgo.reset_index(drop=True, inplace=True)
 
 # Загружаем данные из БД Европы и Сибири
-query_vsvgo_eur = '''select target_date, hour, t.trader_code gtp_code, ga_code, dp power, vsvgo_amount amount
+query_vsvgo_eur = '''select distinct target_date, hour, t.trader_code gtp_code, ga_code, dp power, vsvgo_amount amount
     from FRSDB_DEV.pbr_vsvgo v, frsdb_dev.trader t
     where v.target_date between to_date(:d, 'dd.mm.yyyy') and last_day(to_date(:d, 'dd.mm.yyyy'))
     and v.end_ver=999999999999999
     and v.target_date between t.begin_date and t.end_date
     and t.trader_type=100 and t.real_trader_id=v.gtp_id
     order by 1,2,3,4'''
-query_vsvgo_sib = '''select target_date, hour, t.trader_code gtp_code, ga_code, dp power, vsvgo_amount amount
+query_vsvgo_sib = '''select distinct target_date, hour, t.trader_code gtp_code, ga_code, dp power, vsvgo_amount amount
     from FRSDB_DEV_sib.pbr_vsvgo v, FRSDB_DEV_sib.trader t
     where v.target_date between to_date(:d, 'dd.mm.yyyy') and last_day(to_date(:d, 'dd.mm.yyyy'))
     and v.end_ver=999999999999999
@@ -79,13 +79,17 @@ vsvgo_test.reset_index(drop=True, inplace=True)
 # Сравниваем отчет с данными в базе
 check = vsvgo_test.append(vsvgo)
 check.drop_duplicates(keep=False, inplace=True)
-# print(check)
 if check.shape[0] != 0:
-    print('Прервано! Объемы из базы данных не совпадают с объемами в отчете по ВСВГО: ')
+    print('Прервано! Данные из БД не совпадают с данными в отчете по ВСВГО: ')
     print(check)
     raise SystemExit
+elif vsvgo.shape[0] != vsvgo_test.shape[0]:
+    print('Прервано! Неверное количество записей: ')
+    print('в БД    : ', vsvgo_test.shape[0])
+    print('в отчете: ', vsvgo.shape[0])
+    raise SystemExit
 else:
-    print('Проверка отчета выполнена успешно! Объемы из базы данных совпадают с объемами в отчете по ВСВГО')
+    print('Проверка отчета выполнена успешно! Данные из БД совпадают с данными в отчете по ВСВГО')
 # Создаем отчет по пускам из холодного резерва
 query_vsvgo_check_eur = '''select target_date, gtp_id, amount
                         from FRSDB_DEV.pbr_vsvgo_check
