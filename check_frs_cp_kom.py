@@ -1,3 +1,4 @@
+import os
 from lxml import objectify
 from lxml import etree
 import pandas as pd
@@ -23,7 +24,10 @@ m = ['январь', 'февраль', 'март', 'апрель', 'май', 'и
 # Создаем пути
 path_0 = cfg.path
 path = path_0 + 'Факт по ГТПГ по ФРС ЦП КОМ/' + ye + '/' + mon + ye + '_MFO_BR_TODFR_VOLUME.xml'
-
+# Проверяем наличие отчета для СВНЦ
+if not os.path.isfile(path):
+    print('Прервано! Отчет для ФРС ЦП КОМ не найден')
+    raise SystemExit
 # Парсим xml
 col = ('key-gtpg', 'trader-code', 'date-hour', 'volume-fact')
 data = []
