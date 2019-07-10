@@ -30,6 +30,15 @@ path_0 = cfg.path
 path_eur = path_0 + 'Отчеты для фин гарантий/' + ye + '/' + mon + '/' + ye + mon + '01_report_vc_ppp_eur' + '.xml'
 path_sib = path_0 + 'Отчеты для фин гарантий/' + ye + '/' + mon + '/' + ye + mon + '01_report_vc_ppp_sib' + '.xml'
 
+# Проверяем наличие отчетов ППП
+if not os.path.isfile(path_eur):
+    print('Прервано! Отчет ППП для Европы отсутствует')
+    raise SystemExit
+
+if not os.path.isfile(path_sib):
+    print('Прервано! Отчет ППП для Сибири отсутствует')
+    raise SystemExit
+
 # Обратный путь для перекладывания архивов
 path_out_eur = path_0 + 'Отчеты для фин гарантий/' + ye + '/' + mon + '/' + ye + mon + '01_report_vc_ppp_eur' + '.zip'
 path_out_sib = path_0 + 'Отчеты для фин гарантий/' + ye + '/' + mon + '/' + ye + mon + '01_report_vc_ppp_sib' + '.zip'
