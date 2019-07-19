@@ -127,17 +127,16 @@ df_Four_x_stor_INT_sib = pd.read_sql(Four_x_stor_INT_sib, conn_sib, params={'d':
 df_fact_PCHITAZN = pd.read_sql(fact_PCHITAZN, conn_sib, params={'d': date})
 
 df_fact_PCHITAZN['ДАТА'] = df_fact_PCHITAZN['ДАТА'].astype('str')
-# df_Four_x_stor_INT_eur['ДАТА'] = df_Four_x_stor_INT_eur['ДАТА'].astype('str')
-# df_Four_x_stor_INT_sib['ДАТА'] = df_Four_x_stor_INT_sib['ДАТА'].astype('str')
+
 conn_eur.close()
 conn_sib.close()
 
 df_Four_x_stor_INT=df_Four_x_stor_INT_eur.append(df_Four_x_stor_INT_sib)
 
+# Для PCHITAZN можно этот вариант форматирования массива и записи в xlsx
 style = Styler(font_size=10,
                horizontal_alignment=utils.horizontal_alignments.right)
 
-# Для PCHITAZN можно этот вариант
 columns = df_fact_PCHITAZN.axes[1]
 PCHITAZN = StyleFrame(df_fact_PCHITAZN)
 excel_writer = StyleFrame.ExcelWriter(path_PCHITAZN)
@@ -165,7 +164,6 @@ align_head = Alignment(horizontal='center', vertical='center',
 align_cell = Alignment(horizontal='right', vertical='center',
                        text_rotation=0, wrap_text=False,
                        shrink_to_fit=False, indent=0)
-
 
 # Форматирование Excel
 def exstyle(path):
