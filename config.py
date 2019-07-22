@@ -30,6 +30,10 @@ send_cc = 'a.zhuravlev@rosenergo.com, slesarenko@rosenergo.com, nasonov@rosenerg
 # Отчёты 14 числа
 # 4-х сторонние по ИНТЕР РАО и факт PCHITAZN
 send_to_INTER_CHITA ='alexch@rosenergo.com, a.maksimova@rosenergo.com, haustova@rosenergo.com'
+# Сверхбаланс + ДД + Суммарный факт по ДВ на ТС
+send_to_SverhBal = 'bakaev@rosenergo.com, bushuev@rosenergo.com, sea@rosenergo.com'
+# 4-x сторонние по зонам в ДФР
+send_to_Four_stor_zone = 'ovk@rosenergo.com, kalachev@rosenergo.com, i.druzhinina@rosenergo.com, a.kuznecov@rosenergo.com'
 
 # Адреса получателей отчетов по индикаторам и для СВНЦ
 # send_to_svnc = 'nasonov@rosenergo.com'
@@ -43,5 +47,7 @@ send_to_INTER_CHITA ='alexch@rosenergo.com, a.maksimova@rosenergo.com, haustova@
 # send_to_ts = 'a.zhuravlev@rosenergo.com'
 # Адреса получателей отчетов по неготовности в ДФР
 # send_to_net = 'nasonov@rosenergo.com'
-# send_cc = 'slesarenko@rosenergo.com'  # Копии
+# send_cc = 'nasonov@rosenergo.com'  # Копии
 # send_to_INTER_CHITA ='nasonov@rosenergo.com'
+# send_to_SverhBal = 'nasonov@rosenergo.com'
+# send_to_Four_stor_zone = 'nasonov@rosenergo.com'
