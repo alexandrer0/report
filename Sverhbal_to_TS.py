@@ -2,7 +2,6 @@ import config as cfg
 import cx_Oracle as ora
 import pandas as pd
 import os
-from StyleFrame import StyleFrame, Styler, utils
 from openpyxl.styles import Border, Side, Alignment
 from openpyxl import load_workbook
 from time import time
@@ -71,7 +70,6 @@ SverhBal_sib = '''Select g.target_date as Дата, 'Сибирь' as ЦЗ, g.ge
                                      ) x group by trunc(x.target_date,'month')) p'''
 
 # Суммарный факт по ДВ
-
 Fact_DV = ''' Select p.target_date as Дата, potr as Потребление, gen as Генерация
                 From
                     (SELECT distinct trunc(a.target_date, 'month') target_date, sum(a.fact) over (partition by trunc(a.target_date, 'month')) potr
@@ -86,7 +84,7 @@ Fact_DV = ''' Select p.target_date as Дата, potr as Потребление, 
                     and a.end_ver>9999999999999
                     and a.is_daily = 0)g'''
 
-
+# Формируем датафреймы
 df_SverhBal_eur = pd.read_sql(SverhBal_eur, conn_eur, params={'d': date})
 df_SverhBal_sib = pd.read_sql(SverhBal_sib, conn_sib, params={'d': date})
 df_Fact_DV = pd.read_sql(Fact_DV, conn_sib, params={'d': date})
